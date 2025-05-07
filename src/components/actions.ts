@@ -5,70 +5,70 @@ import { contactSchema, simpleEmailSchema } from "./schema";
 import { formDataToObject } from "@/lib/utils";
 
 type SimpleEmailActionResponse = {
-    error?:string;
-    success:boolean
+    error?: string;
+    success: boolean
 }
 
-export async function simpleEmailAction(data:FormData):Promise<SimpleEmailActionResponse>{
+export async function simpleEmailAction(data: FormData): Promise<SimpleEmailActionResponse> {
     try {
         const form = simpleEmailSchema.parse(formDataToObject(data));
 
         await sendEmail({
-            from:"no-reply@example.com",
-            to:form.email,
-            text:"Here is a simple email",
-            subject:"Test email"
+            from: "no-reply@example.com",
+            to: form.email,
+            text: "Bonjour, voici un email venant du server",
+            subject: "Test email"
         });
-    
+
         return {
-            success:true
+            success: true
         };
     }
-    catch(error){
+    catch (error) {
         console.log(error)
         return {
-            error:"Invalid input",
-            success:false
+            error: "Invalid input",
+            success: false
         };
     }
 }
 
 
 type ContactActionResponse = {
-    error?:string;
-    success:boolean;
+    error?: string;
+    success: boolean;
 }
 
-export async function contactAction(data:FormData):Promise<ContactActionResponse>{
+export async function contactAction(data: FormData): Promise<ContactActionResponse> {
     const validate = contactSchema.safeParse(formDataToObject(data));
 
-    if(!validate.success){
+    if (!validate.success) {
         return {
-            error:"Invalid input",
-            success:false
+            error: "Invalid input",
+            success: false
         };
     }
 
     const contact = validate.data;
 
     const messageContent = `
-    Hello,
+    Bonjour,
 
-    ${contact.name} (${contact.email}), is contacting you.
-    Here is the message:
+    ${contact.name} (${contact.email}), vous contacte.
+    voici le message:
     "${contact.content}".
 
-    Best regards,
+    Cordialement,
     `;
 
     await sendEmail({
-        to:process.env.SMTP_DEFAULT_RECEIVER!,
-        from:"no-reply@example.com",
-        subject:`Contact form - ${contact.name}`,
-        text:messageContent
+        to: process.env.SMTP_DEFAULT_RECEIVER!,
+        from: "no-reply@example.com",
+        subject: `Contact formcls - ${contact.name}`,
+        text: messageContent
     });
 
     return {
-        success:true
+        success: true
     };
 }
